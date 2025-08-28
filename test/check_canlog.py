@@ -64,7 +64,7 @@ def check_canlog(filename):
 
         # check if frames were skipped
         diff = (can_id - prev_id) & 0x7FF
-        if 1 < diff <= 10000:  # allow search up to 1000 frames gap
+        if 1 < diff <= 50:  # allow search up to 50 frames gap
             print(f"Line {idx + 1}: Skipped {diff - 1} frame(s) before this line")
             missing_total += diff - 1
             total_expected += diff
