@@ -254,7 +254,7 @@ static bool init_can() {
     while (true) {
         if (xQueueReceive(canQueue, &msg, portMAX_DELAY) == pdTRUE) {
             LogLine line{};
-            int n = snprintf(line.data, sizeof(line.data), "(%.6lf) can %lX#", msg.timestamp, (unsigned long) msg.id);
+            int n = snprintf(line.data, sizeof(line.data), "(%.6lf) can %03lX#", msg.timestamp, (unsigned long) msg.id);
             for (int i = 0; i < msg.len && n < (int) sizeof(line.data) - 2; i++) {
                 n += snprintf(line.data + n, sizeof(line.data) - n, "%02X", msg.buf[i]);
             }
