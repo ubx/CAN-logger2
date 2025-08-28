@@ -11,8 +11,8 @@ def parse_can_line(line):
     Parse line of format: (timestamp) can <ID>#<DATA>
     Returns (timestamp, can_id) or None if invalid.
     """
-    # Ignore comment/metadata lines starting with "*"
-    if line.strip().startswith("*"):
+    # Ignore comment/metadata lines starting with "*" or "#"
+    if line.strip().startswith(("*", "#")):
         return None
 
     match = re.match(r"\(([\d\.]+)\)\s+\w+\s+([0-9A-Fa-f]+)#", line.strip())
@@ -32,6 +32,8 @@ def check_canlog(filename):
     missing_total = 0
     total_logged = 0
     total_expected = 0
+    first_ts = None
+    last_ts = None
 
     for idx, line in enumerate(lines):
         parsed = parse_can_line(line)
@@ -41,6 +43,10 @@ def check_canlog(filename):
 
         ts, can_id = parsed
         total_logged += 1
+
+        if first_ts is None:
+            first_ts = ts
+        last_ts = ts
 
         if prev_id is None:
             # first frame sets starting point
@@ -58,7 +64,7 @@ def check_canlog(filename):
 
         # check if frames were skipped
         diff = (can_id - prev_id) & 0x7FF
-        if 1 < diff <= 50:  # allow search up to 50 frames gap
+        if 1 < diff <= 10000:  # allow search up to 1000 frames gap
             print(f"Line {idx + 1}: Skipped {diff - 1} frame(s) before this line")
             missing_total += diff - 1
             total_expected += diff
@@ -67,13 +73,22 @@ def check_canlog(filename):
             print(f"Line {idx + 1}: Corrupted ID {can_id:03X}, expected {expected_id:03X}")
             errors += 1
             total_expected += 1
-            prev_id = expected_id  # resync expectation
+            prev_id = can_id  # <-- resync here, not to expected_id
 
     print("\n===== SUMMARY =====")
     print(f"Total frames logged   : {total_logged}")
     print(f"Total frames expected : {total_expected}")
     print(f"Missing frames        : {missing_total}")
     print(f"Corrupted frames      : {errors}")
+
+    if total_logged > 1 and first_ts is not None and last_ts is not None:
+        duration = last_ts - first_ts
+        if duration > 0:
+            avg_rate = total_logged / duration
+            print(f"Average rate          : {avg_rate:.2f} messages/sec")
+        else:
+            print("Average rate          : n/a (duration too short)")
+
     if errors == 0 and missing_total == 0:
         print("✅ CAN ID sequence is correct, no frames missing")
     else:
@@ -84,6 +99,6 @@ def check_canlog(filename):
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: python check_canlog.py canlog00.log")
+        print("Usage: python check_canlog.py <filename>")
         sys.exit(1)
     check_canlog(sys.argv[1])
