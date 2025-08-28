@@ -23,8 +23,8 @@
 #define SD_MOUNT_POINT     "/sdcard"
 #define CAN_TX_PIN         GPIO_NUM_18
 #define CAN_RX_PIN         GPIO_NUM_17
-#define QUEUE_LEN          1024
-#define BATCH_MAX_BYTES    (32*1024)
+#define QUEUE_LEN          1536
+#define BATCH_MAX_BYTES    (64*1024)
 #define BATCH_MAX_MS       20
 #define FICTIONAL_START_TIME 1755839937.312293  // due to missing RTC
 
@@ -35,7 +35,7 @@ static const char *TAG = "LOGGING_MODE";
 // -----------------------------
 typedef struct {
     uint16_t len;
-    char data[64];
+    char data[38];
 } LogLine;
 
 // -----------------------------
