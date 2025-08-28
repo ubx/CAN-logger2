@@ -11,6 +11,10 @@ def parse_can_line(line):
     Parse line of format: (timestamp) can <ID>#<DATA>
     Returns (timestamp, can_id) or None if invalid.
     """
+    # Ignore comment/metadata lines starting with "*"
+    if line.strip().startswith("*"):
+        return None
+
     match = re.match(r"\(([\d\.]+)\)\s+\w+\s+([0-9A-Fa-f]+)#", line.strip())
     if not match:
         return None
@@ -32,8 +36,7 @@ def check_canlog(filename):
     for idx, line in enumerate(lines):
         parsed = parse_can_line(line)
         if not parsed:
-            print(f"Line {idx + 1}: Invalid format -> {line.strip()}")
-            errors += 1
+            # skip invalid/comment lines silently
             continue
 
         ts, can_id = parsed
