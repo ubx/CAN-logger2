@@ -23,7 +23,6 @@ extern "C" void app_main(void) {
     wifi_init_softap();
     httpd_handle_t server = start_webserver();
 
-    vTaskDelay(pdMS_TO_TICKS(5 * 60 * 1000));
     reset_web_activity();
 
     while (true) {
