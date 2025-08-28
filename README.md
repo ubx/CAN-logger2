@@ -59,7 +59,7 @@ while also providing a temporary WiFi access point with a web-based file browser
 - **Lightweight Web Server** (ESP-IDF HTTPD) for SD browsing and downloads.
 - **No RTC dependency**: Uses a fictional start timestamp to emulate Unix t.ime.
 - **Tested on a ESP32-S3 board** ([ESP32-S3 1.64inch AMOLED Touch Display Development Board](https://www.waveshare.com/esp32-s3-touch-amoled-1.64.htm) and
-  [SkyView-AMOLED-round-1.75-TFT_eSPI](https://github.com/slash-bit/SkyView-AMOLED-round-1.75-TFT_eSPI)).
+  [ESP32-S3-Touch-AMOLED-1.75](https://www.waveshare.com/wiki/ESP32-S3-Touch-AMOLED-1.75)).
 - **Performance Test** with xxx 4Byte CANaerospace messages/s.
 
 ---
