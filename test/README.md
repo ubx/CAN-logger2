@@ -1,6 +1,6 @@
 # CAN Log Checker
 
-This Python tool validates CAN bus logs generated with `'cangen can0 -D i -I i -L 8 -g 10'` and recorded in `candump`-style format:
+This Python tool validates CAN bus logs generated with `'cangen can0 -D i -I i -L 4 -g 10'` and recorded in `candump`-style format:
 
 
 ## Features
@@ -12,12 +12,12 @@ This Python tool validates CAN bus logs generated with `'cangen can0 -D i -I i -
 
 ## Examples of supported formats:
 ```
-(1756343254.078218) can0 36B#6BA3070000000000
-(1756343254.078218) can 36B#6BA3070000000000
-(1756343254.078218) vcan 36B#6BA3070000000000
+(1756343254.078218) can0 36B#6BA30700
+(1756343254.078218) can 36B#6BA30700
+(1756343254.078218) vcan 36B#6BA30700
 ```
 ## Usage
 Run the checker on a log file:
 
 ```bash
-python check_canlog.py canlog00.log
+python check_canlog.py <logfile>

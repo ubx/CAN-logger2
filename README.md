@@ -60,7 +60,7 @@ while also providing a temporary WiFi access point with a web-based file browser
 - **No RTC dependency**: Uses a fictional start timestamp to emulate Unix t.ime.
 - **Tested on a ESP32-S3 board** ([ESP32-S3 1.64inch AMOLED Touch Display Development Board](https://www.waveshare.com/esp32-s3-touch-amoled-1.64.htm) and
   [ESP32-S3-Touch-AMOLED-1.75](https://www.waveshare.com/wiki/ESP32-S3-Touch-AMOLED-1.75)).
-- **Performance Test** with xxx 4Byte CANaerospace messages/s.
+- **Performance Test** with `cangen can0 -D i -I i -L 4 -g 1` results 890 messages/sec.
 
 ---
 

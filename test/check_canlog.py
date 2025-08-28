@@ -2,7 +2,7 @@ import re
 import sys
 
 """
-Generate data with this command 'cangen can0 -D i -I i -L 8 -g 10'
+Generate data with this command 'cangen can0 -D i -I i -L 4 -g 10'
 """
 
 
