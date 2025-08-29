@@ -129,6 +129,7 @@ while also providing a temporary WiFi access point with a web-based file browser
 - **MicroSD Card Reader** (for PC, to inspect logs directly if needed)
 - **USB-to-CAN Adapter** (for testing/logging against a PC CAN interface)
 - **Case/Enclosure** to protect the ESP32 + modules in automotive environment
+- **For CANaerospace logs**: use [this program](https://github.com/ubx/canlog-correct-ts/blob/master/correct-ts.py) to adjust timestamps.
 
 
 ## Todo
