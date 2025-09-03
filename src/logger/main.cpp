@@ -5,11 +5,34 @@
 #include "esp_netif.h"
 #include "esp_wifi.h"
 #include "esp_timer.h"
+#include "esp_log.h"
 
-extern "C" void app_main(void) {
+#ifndef APP_NAME
+#define APP_NAME "UnknownApp"
+#endif
+
+#ifndef APP_VERSION
+#define APP_VERSION "0.0.0"
+#endif
+
+#ifndef GIT_REVISION
+#define GIT_REVISION "unknown"
+#endif
+static const char* TAG = "CAN_Logger";
+
+extern "C" void app_main(void)
+{
+    vTaskDelay(pdMS_TO_TICKS(1000));
+    ESP_LOGI(TAG, "\n=== %s Info ====", TAG);
+    ESP_LOGI(TAG, "App: %s", APP_NAME);
+    ESP_LOGI(TAG, "Version: %s", APP_VERSION);
+    ESP_LOGI(TAG, "Git Rev: %s", GIT_REVISION);
+    ESP_LOGI(TAG, "ESP-IDF Version: %s", esp_get_idf_version());
+
     // Init NVS
     esp_err_t ret = nvs_flash_init();
-    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND)
+    {
         ESP_ERROR_CHECK(nvs_flash_erase());
         ret = nvs_flash_init();
     }
@@ -25,8 +48,10 @@ extern "C" void app_main(void) {
 
     reset_web_activity();
 
-    while (true) {
-        if (esp_timer_get_time() / 1000ULL - get_last_web_activity() >= 5 * 60 * 1000) {
+    while (true)
+    {
+        if (esp_timer_get_time() / 1000ULL - get_last_web_activity() >= 5 * 60 * 1000)
+        {
             break;
         }
         vTaskDelay(pdMS_TO_TICKS(1000));
