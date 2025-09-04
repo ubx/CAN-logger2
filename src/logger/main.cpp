@@ -1,11 +1,13 @@
+#include <esp_event.h>
+#include <esp_heap_caps.h>
+#include <esp_log.h>
+#include <esp_netif.h>
+#include <esp_system.h>
+#include <esp_timer.h>
+#include <esp_wifi.h>
+#include <nvs_flash.h>
 #include "wifi_web.h"
 #include "logging.h"
-#include "esp_event.h"
-#include "nvs_flash.h"
-#include "esp_netif.h"
-#include "esp_wifi.h"
-#include "esp_timer.h"
-#include "esp_log.h"
 
 #ifndef APP_NAME
 #define APP_NAME "UnknownApp"
@@ -29,6 +31,14 @@ extern "C" void app_main(void)
     ESP_LOGI(TAG, "Git Rev: %s", GIT_REVISION);
     ESP_LOGI(TAG, "ESP-IDF Version: %s", esp_get_idf_version());
 
+    size_t psram_size = heap_caps_get_total_size(MALLOC_CAP_SPIRAM);
+    size_t psram_free = heap_caps_get_free_size(MALLOC_CAP_SPIRAM);
+    if (psram_size > 0)
+    {
+        ESP_LOGI(TAG, "PSRAM detected\n");
+        ESP_LOGI(TAG, "Total PSRAM: %u bytes\n", (unsigned)psram_size);
+        ESP_LOGI(TAG, "Free PSRAM:  %u bytes\n", (unsigned)psram_free);
+    }
     // Init NVS
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND)
