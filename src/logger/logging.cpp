@@ -8,7 +8,6 @@
 
 #include "esp_log.h"
 #include "driver/sdmmc_host.h"
-#include "driver/sdmmc_defs.h"
 #include "sdmmc_cmd.h"
 #include "esp_vfs_fat.h"
 #include "driver/twai.h"
@@ -16,6 +15,7 @@
 #include "freertos/task.h"
 #include "freertos/queue.h"
 #include "esp_timer.h"
+#include "spi_bus_config.h"
 
 // -----------------------------
 // Shared config (from main)
@@ -151,12 +151,11 @@ static bool init_sd_card_and_open_file() {
 
     sdmmc_host_t host = SDSPI_HOST_DEFAULT();
     host.slot = SPI2_HOST;
-    host.max_freq_khz = 25 * 1000; // 25 MHz
 
     spi_bus_config_t bus_cfg = {
-            .mosi_io_num = GPIO_NUM_1,
-            .miso_io_num = GPIO_NUM_3,
-            .sclk_io_num = GPIO_NUM_2,
+            .mosi_io_num = MOSI_IO_NUM,
+            .miso_io_num = MISO_IO_NUM,
+            .sclk_io_num = SCLK_IO_NUM,
             .quadwp_io_num = -1,
             .quadhd_io_num = -1,
             .max_transfer_sz = 4000,
@@ -168,7 +167,7 @@ static bool init_sd_card_and_open_file() {
     }
 
     sdspi_device_config_t slot_config = SDSPI_DEVICE_CONFIG_DEFAULT();
-    slot_config.gpio_cs = GPIO_NUM_41;
+    slot_config.gpio_cs = GPIO_CS;
     slot_config.host_id = static_cast<spi_host_device_t>(host.slot);
 
     esp_vfs_fat_sdmmc_mount_config_t mount_config = {
