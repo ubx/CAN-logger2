@@ -315,10 +315,10 @@ static bool init_can() {
 // -----------------------------
 // Public API: start logging mode
 // -----------------------------
-bool start_logging_mode() {
+void start_logging_mode() {
     if (!init_sd_card_and_open_file()) {
         ESP_LOGE(TAG, "SD init/open failed for logging");
-        return false;
+        return;
     }
 
     if (!init_can()) {
@@ -326,7 +326,7 @@ bool start_logging_mode() {
         vTaskDelay(pdMS_TO_TICKS(1000));
         if (!init_can()) {
             ESP_LOGE(TAG, "CAN init failed permanently!");
-            return false;
+            return;
         }
     }
 
@@ -334,7 +334,7 @@ bool start_logging_mode() {
     sdQueue = xQueueCreate(QUEUE_LEN, sizeof(LogLine));
     if (!canQueue || !sdQueue) {
         ESP_LOGE(TAG, "queue create failed");
-        return false;
+        return;
     }
 
     xTaskCreate(can_receiver_task, "CAN_RX", 4096, nullptr, 5, nullptr);
