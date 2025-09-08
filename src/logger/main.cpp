@@ -8,6 +8,7 @@
 #include <nvs_flash.h>
 #include "wifi_web.h"
 #include "logging.h"
+#include "lvgl_gui.h"
 
 #ifndef APP_NAME
 #define APP_NAME "UnknownApp"
@@ -51,7 +52,13 @@ extern "C" void app_main(void)
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
 
+    vTaskDelay(pdMS_TO_TICKS(1000));
+    lv_init();
+    lv_obj_t *scr = lv_scr_act();
+    //gui_log_init(scr);
+
     // WiFi Phase
+    gui_log("WiFi Phase");
     mount_sd_for_wifi();
     wifi_init_softap();
     httpd_handle_t server = start_webserver();
@@ -72,5 +79,6 @@ extern "C" void app_main(void)
     unmount_sd_after_wifi();
 
     // Logging Mode
+    gui_log("Logging Mode");
     start_logging_mode();
 }
