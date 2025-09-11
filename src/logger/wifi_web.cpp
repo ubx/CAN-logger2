@@ -15,10 +15,9 @@
 #include "sdmmc_cmd.h"
 #include "esp_vfs_fat.h"
 #include "esp_timer.h"
-#include "spi_bus_config.h"
+#include "common.h"
 
 #define WIFI_PASSWORD     "12345678"
-#define SD_MOUNT_POINT    "/sdcard"
 
 #pragma GCC diagnostic ignored "-Wformat-truncation"
 

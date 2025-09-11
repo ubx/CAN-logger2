@@ -15,12 +15,11 @@
 #include "freertos/task.h"
 #include "freertos/queue.h"
 #include "esp_timer.h"
-#include "spi_bus_config.h"
+#include "common.h"
 
 // -----------------------------
 // Shared config (from main)
 // -----------------------------
-#define SD_MOUNT_POINT     "/sdcard"
 #define CAN_TX_PIN         GPIO_NUM_18
 #define CAN_RX_PIN         GPIO_NUM_17
 #define QUEUE_LEN          1536
