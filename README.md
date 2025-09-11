@@ -137,6 +137,6 @@ while also providing a temporary WiFi access point with a web-based file browser
 - ~~RTC~~
 - ~~unique ssid~~
 - ~~split sources~~
-- design a case
+- ~~design a case~~
 - display info
 
