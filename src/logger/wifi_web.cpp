@@ -20,6 +20,8 @@
 #define WIFI_PASSWORD     "12345678"
 #define SD_MOUNT_POINT    "/sdcard"
 
+#pragma GCC diagnostic ignored "-Wformat-truncation"
+
 static const char* TAG = "WIFI_WEB";
 
 // Track last HTTP request activity
