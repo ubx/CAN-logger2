@@ -202,7 +202,7 @@ bool gui_init()
     sh8601_vendor_config_t vendor_config = {
         .init_cmds = lcd_init_cmds,
         .init_cmds_size = sizeof(lcd_init_cmds) / sizeof(lcd_init_cmds[0]),
-        .flags = {.use_qspi_interface = 1},
+        .flags = {. = 0},
     };
 
     ESP_LOGI(TAG, "Install SH8601 panel driver");
