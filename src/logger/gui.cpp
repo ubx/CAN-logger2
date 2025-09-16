@@ -159,8 +159,8 @@ bool gui_init()
     const size_t buf_line_bytes = LCD_H_RES * LVGL_BUF_HEIGHT;
     const size_t buf_alloc_bytes = buf_line_bytes + 8;
 
-    void* buf1 = heap_caps_malloc(buf_alloc_bytes,  MALLOC_CAP_8BIT);
-    void* buf2 = heap_caps_malloc(buf_alloc_bytes, MALLOC_CAP_8BIT);
+    void* buf1 = heap_caps_malloc(buf_alloc_bytes, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+    void* buf2 = heap_caps_malloc(buf_alloc_bytes, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
 
     if (!buf1 || !buf2)
     {
