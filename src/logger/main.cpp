@@ -10,6 +10,7 @@
 #include "gui.h"
 #include "wifi_web.h"
 #include "logging.h"
+#include "spi.h"
 
 #ifndef APP_NAME
 #define APP_NAME "UnknownApp"
@@ -22,6 +23,9 @@
 #ifndef GIT_REVISION
 #define GIT_REVISION "unknown"
 #endif
+
+static const unsigned IDLE_TIME = 1 * 60 * 1000;
+
 static const char* TAG = "CAN_Logger";
 
 extern "C" void app_main(void)
@@ -37,9 +41,9 @@ extern "C" void app_main(void)
     size_t psram_free = heap_caps_get_free_size(MALLOC_CAP_SPIRAM);
     if (psram_size > 0)
     {
-        ESP_LOGI(TAG, "PSRAM detected\n");
-        ESP_LOGI(TAG, "Total PSRAM: %u bytes\n", (unsigned)psram_size);
-        ESP_LOGI(TAG, "Free PSRAM:  %u bytes\n", (unsigned)psram_free);
+        ESP_LOGI(TAG, "PSRAM detected");
+        ESP_LOGI(TAG, "Total PSRAM: %u bytes", (unsigned)psram_size);
+        ESP_LOGI(TAG, "Free PSRAM:  %u bytes", (unsigned)psram_free);
     }
     // Init NVS
     esp_err_t ret = nvs_flash_init();
@@ -55,10 +59,11 @@ extern "C" void app_main(void)
 
     vTaskDelay(pdMS_TO_TICKS(1000));
 
-    // WiFi Phase
-    mount_sd_for_wifi();
-
+    spi_init();
     gui_init();
+
+    // WiFi Phase
+    mount_sdcard();
 
     set_label1("Hellll0");
 
@@ -69,7 +74,7 @@ extern "C" void app_main(void)
 
     while (true)
     {
-        if (esp_timer_get_time() / 1000ULL - get_last_web_activity() >= 5 * 60 * 1000)
+        if (esp_timer_get_time() / 1000ULL - get_last_web_activity() >= IDLE_TIME)
         {
             break;
         }

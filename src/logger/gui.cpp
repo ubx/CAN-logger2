@@ -199,13 +199,17 @@ bool gui_init()
         notify_lvgl_flush_ready,
         display // user_ctx
     );
+
     sh8601_vendor_config_t vendor_config = {
         .init_cmds = lcd_init_cmds,
         .init_cmds_size = sizeof(lcd_init_cmds) / sizeof(lcd_init_cmds[0]),
-        .flags = {. = 0},
+        .flags = {.use_qspi_interface = 0},
     };
 
-    ESP_LOGI(TAG, "Install SH8601 panel driver");
+    // Attach the LCD to the SPI bus
+    ESP_ERROR_CHECK(esp_lcd_new_panel_io_spi((esp_lcd_spi_bus_handle_t)SPI2_HOST, &io_config, &io_handle));
+
+    ESP_LOGI(TAG, "Install LCD driver of sh8601");
     esp_lcd_panel_handle_t panel_handle = nullptr;
     const esp_lcd_panel_dev_config_t panel_config = {
         .reset_gpio_num = PIN_NUM_LCD_RST,
@@ -213,11 +217,11 @@ bool gui_init()
         .bits_per_pixel = 16,
         .vendor_config = &vendor_config,
     };
-
-    ESP_ERROR_CHECK(esp_lcd_new_panel_io_spi((spi_host_device_t)SPI2_HOST, &io_config, &io_handle));
     ESP_ERROR_CHECK(esp_lcd_new_panel_sh8601(io_handle, &panel_config, &panel_handle));
     ESP_ERROR_CHECK(esp_lcd_panel_reset(panel_handle));
     ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));
+    ESP_ERROR_CHECK(esp_lcd_panel_disp_on_off(panel_handle, true));
+
 
     // Bind LVGL and panel
     lv_display_set_user_data(display, panel_handle);

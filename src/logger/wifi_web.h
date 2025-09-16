@@ -9,7 +9,7 @@ void wifi_init_softap();
 httpd_handle_t start_webserver();
 
 // Mount SD for WiFi file browsing
-bool mount_sd_for_wifi();
+bool mount_sdcard();
 
 // Unmount SD after WiFi phase
 void unmount_sd_after_wifi();

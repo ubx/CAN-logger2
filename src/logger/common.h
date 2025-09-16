@@ -1,5 +1,7 @@
 #pragma once
 
+#include <soc/gpio_num.h>
+
 #define MOSI_IO_NUM GPIO_NUM_39
 #define MISO_IO_NUM GPIO_NUM_40
 #define SCLK_IO_NUM GPIO_NUM_41

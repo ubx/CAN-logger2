@@ -25,9 +25,8 @@ static const char* TAG = "WIFI_WEB";
 
 // Track last HTTP request activity
 static unsigned long lastWebActivity = 0;
-
-static sdmmc_card_t* g_card_wifi = nullptr;
-static sdmmc_host_t g_wifi_host = {0};
+static sdmmc_card_t* card = nullptr;
+static sdmmc_host_t host = {0};
 
 static unsigned long millis()
 {
@@ -211,30 +210,11 @@ httpd_handle_t start_webserver()
 }
 
 // ---- SD mounting for WiFi ----
-bool mount_sd_for_wifi()
+bool mount_sdcard()
 {
-    g_wifi_host = SDSPI_HOST_DEFAULT();
-    g_wifi_host.slot = SPI2_HOST;
-    g_wifi_host.max_freq_khz = 25 * 1000;
-
-    spi_bus_config_t bus_cfg = {
-        .mosi_io_num = MOSI_IO_NUM,
-        .miso_io_num = MISO_IO_NUM,
-        .sclk_io_num = SCLK_IO_NUM,
-        .quadwp_io_num = -1,
-        .quadhd_io_num = -1,
-        .max_transfer_sz = 4000,
-    };
-    esp_err_t ret = spi_bus_initialize(static_cast<spi_host_device_t>(g_wifi_host.slot), &bus_cfg, SDSPI_DEFAULT_DMA);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE("SD_WIFI", "spi_bus_initialize: %s", esp_err_to_name(ret));
-        return false;
-    }
-
     sdspi_device_config_t slot_config = SDSPI_DEVICE_CONFIG_DEFAULT();
     slot_config.gpio_cs = GPIO_CS;
-    slot_config.host_id = static_cast<spi_host_device_t>(g_wifi_host.slot);
+    slot_config.host_id = SPI2_HOST;
 
     esp_vfs_fat_sdmmc_mount_config_t mount_config = {
         .format_if_mount_failed = false,
@@ -242,12 +222,15 @@ bool mount_sd_for_wifi()
         .allocation_unit_size = 16 * 1024
     };
 
-    g_card_wifi = nullptr;
-    ret = esp_vfs_fat_sdspi_mount(SD_MOUNT_POINT, &g_wifi_host, &slot_config, &mount_config, &g_card_wifi);
+    host = SDSPI_HOST_DEFAULT();
+    host.slot = SPI2_HOST;
+    //host.max_freq_khz = 25 * 1000;
+
+    esp_err_t ret = esp_vfs_fat_sdspi_mount(SD_MOUNT_POINT, &host, &slot_config, &mount_config, &card);
     if (ret != ESP_OK)
     {
         ESP_LOGE("SD_WIFI", "mount: %s", esp_err_to_name(ret));
-        spi_bus_free(static_cast<spi_host_device_t>(g_wifi_host.slot));
+        spi_bus_free(static_cast<spi_host_device_t>(host.slot));
         return false;
     }
 
@@ -257,14 +240,14 @@ bool mount_sd_for_wifi()
 
 void unmount_sd_after_wifi()
 {
-    if (g_card_wifi)
+    if (card)
     {
-        esp_vfs_fat_sdcard_unmount(SD_MOUNT_POINT, g_card_wifi);
-        g_card_wifi = nullptr;
+        esp_vfs_fat_sdcard_unmount(SD_MOUNT_POINT, card);
+        card = nullptr;
     }
-    if (g_wifi_host.slot != 0)
+    if (host.slot != 0)
     {
-        spi_bus_free(static_cast<spi_host_device_t>(g_wifi_host.slot));
-        memset(&g_wifi_host, 0, sizeof(g_wifi_host));
+        spi_bus_free(static_cast<spi_host_device_t>(host.slot));
+        memset(&host, 0, sizeof(host));
     }
 }
