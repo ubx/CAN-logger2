@@ -128,7 +128,11 @@ void set_label1(const char* text)
     if (xSemaphoreTake(lvgl_mux, portMAX_DELAY))
     {
         if (label1)
+        {
             lv_label_set_text(label1, text);
+            ESP_LOGI(TAG, "lv_label_set_text");
+        }
+
         xSemaphoreGive(lvgl_mux);
     }
 }
@@ -147,27 +151,16 @@ bool gui_init()
 {
     vTaskDelay(pdMS_TO_TICKS(1000));
 
-    ESP_LOGI(TAG, "Initialize SPI bus");
-    spi_bus_config_t buscfg = {};
-    buscfg.sclk_io_num = PIN_NUM_LCD_PCLK;
-    buscfg.data0_io_num = PIN_NUM_LCD_DATA0;
-    buscfg.data1_io_num = PIN_NUM_LCD_DATA1;
-    buscfg.data2_io_num = PIN_NUM_LCD_DATA2;
-    buscfg.data3_io_num = PIN_NUM_LCD_DATA3;
-    buscfg.max_transfer_sz = LCD_H_RES * LCD_V_RES * 2;
-
-    ESP_ERROR_CHECK(spi_bus_initialize(LCD_HOST, &buscfg, SPI_DMA_CH_AUTO));
-
     // === LVGL Init ===
     ESP_LOGI(TAG, "Initialize LVGL");
     lv_init();
 
     // allocate two line buffers (+8 for LVGL internal palette reservation)
-    const size_t buf_line_bytes = LCD_H_RES * LVGL_BUF_HEIGHT * 2;
+    const size_t buf_line_bytes = LCD_H_RES * LVGL_BUF_HEIGHT;
     const size_t buf_alloc_bytes = buf_line_bytes + 8;
 
-    void* buf1 = heap_caps_malloc(buf_alloc_bytes, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
-    void* buf2 = heap_caps_malloc(buf_alloc_bytes, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+    void* buf1 = heap_caps_malloc(buf_alloc_bytes,  MALLOC_CAP_8BIT);
+    void* buf2 = heap_caps_malloc(buf_alloc_bytes, MALLOC_CAP_8BIT);
 
     if (!buf1 || !buf2)
     {
@@ -206,8 +199,6 @@ bool gui_init()
         notify_lvgl_flush_ready,
         display // user_ctx
     );
-    ESP_ERROR_CHECK(esp_lcd_new_panel_io_spi((esp_lcd_spi_bus_handle_t)LCD_HOST, &io_config, &io_handle));
-
     sh8601_vendor_config_t vendor_config = {
         .init_cmds = lcd_init_cmds,
         .init_cmds_size = sizeof(lcd_init_cmds) / sizeof(lcd_init_cmds[0]),
@@ -222,6 +213,8 @@ bool gui_init()
         .bits_per_pixel = 16,
         .vendor_config = &vendor_config,
     };
+
+    ESP_ERROR_CHECK(esp_lcd_new_panel_io_spi((spi_host_device_t)SPI2_HOST, &io_config, &io_handle));
     ESP_ERROR_CHECK(esp_lcd_new_panel_sh8601(io_handle, &panel_config, &panel_handle));
     ESP_ERROR_CHECK(esp_lcd_panel_reset(panel_handle));
     ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));
@@ -243,11 +236,9 @@ bool gui_init()
         lv_label_set_text(label2, "");
 
         lv_obj_align(label1, LV_ALIGN_CENTER, 0, 0);
-        lv_obj_align(label2, LV_ALIGN_CENTER, 0, 100);
+        lv_obj_align(label2, LV_ALIGN_CENTER, 0, 0);
 
         xSemaphoreGive(lvgl_mux);
     }
-
-    ESP_LOGI(TAG, "Hello text displayed!");
     return false;
 }

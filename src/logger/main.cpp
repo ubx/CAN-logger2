@@ -6,6 +6,8 @@
 #include <esp_timer.h>
 #include <esp_wifi.h>
 #include <nvs_flash.h>
+
+#include "gui.h"
 #include "wifi_web.h"
 #include "logging.h"
 
@@ -55,6 +57,11 @@ extern "C" void app_main(void)
 
     // WiFi Phase
     mount_sd_for_wifi();
+
+    gui_init();
+
+    set_label1("Hellll0");
+
     wifi_init_softap();
     httpd_handle_t server = start_webserver();
 
