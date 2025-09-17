@@ -25,7 +25,6 @@
 #endif
 
 static const unsigned IDLE_TIME = 1 * 60 * 1000;
-
 static const char* TAG = "CAN_Logger";
 
 extern "C" void app_main(void)
@@ -53,25 +52,18 @@ extern "C" void app_main(void)
         ret = nvs_flash_init();
     }
     ESP_ERROR_CHECK(ret);
-
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
 
-    vTaskDelay(pdMS_TO_TICKS(1000));
-
     spi_init();
     gui_init();
-
-    // WiFi Phase
     mount_sdcard();
 
-    set_label1("Hellll0");
-
+    // WiFi Phase
+    set_label1("AP");
     wifi_init_softap();
     httpd_handle_t server = start_webserver();
-
     reset_web_activity();
-
     while (true)
     {
         if (esp_timer_get_time() / 1000ULL - get_last_web_activity() >= IDLE_TIME)
@@ -80,11 +72,10 @@ extern "C" void app_main(void)
         }
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
-
     if (server) httpd_stop(server);
     esp_wifi_stop();
-    unmount_sd_after_wifi();
 
     // Logging Mode
+    set_label1("Logger");
     start_logging_mode();
 }

@@ -1,4 +1,4 @@
 #pragma once
 
-// Initialize logging (mount SD + CAN + tasks)
+// Initialize logging
 void start_logging_mode();

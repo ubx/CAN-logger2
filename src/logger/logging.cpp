@@ -165,37 +165,9 @@ static void next_free_file_name(char* path, size_t path_size)
 // -----------------------------
 static bool init_sd_card_and_open_file()
 {
-    esp_err_t ret;
-
-    sdmmc_host_t host = SDSPI_HOST_DEFAULT();
-    host.slot = SPI2_HOST;
-
-    sdspi_device_config_t slot_config = SDSPI_DEVICE_CONFIG_DEFAULT();
-    slot_config.gpio_cs = GPIO_CS;
-    slot_config.host_id = static_cast<spi_host_device_t>(host.slot);
-
-    esp_vfs_fat_sdmmc_mount_config_t mount_config = {
-        .format_if_mount_failed = false,
-        .max_files = 5,
-        .allocation_unit_size = 16 * 1024,
-        .disk_status_check_enable = false,
-        .use_one_fat = false,
-    };
-
-    sdmmc_card_t* card = nullptr;
-    ret = esp_vfs_fat_sdspi_mount(SD_MOUNT_POINT, &host, &slot_config, &mount_config, &card);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE("SD", "mount: %s", esp_err_to_name(ret));
-        spi_bus_free(static_cast<spi_host_device_t>(host.slot));
-        return false;
-    }
-
     ESP_LOGI("SD", "SD card mounted");
-
     char path[128];
     next_free_file_name(path, sizeof(path));
-
     logFile = fopen(path, "w");
     if (!logFile)
     {
@@ -203,15 +175,12 @@ static bool init_sd_card_and_open_file()
         return false;
     }
     ESP_LOGI("SD", "Logging to: %s", path);
-
     static char io_buf[8 * 1024];
     setvbuf(logFile, io_buf, _IOFBF, sizeof(io_buf));
-
     const char* header = "* CAN Bus Log Started\n";
     fwrite(header, 1, strlen(header), logFile);
     fflush(logFile);
     fsync(fileno(logFile));
-
     return true;
 }
 
@@ -368,7 +337,8 @@ void start_logging_mode()
 
     canQueue = xQueueCreate(QUEUE_LEN, sizeof(CANMessage_t));
     sdQueue = xQueueCreate(QUEUE_LEN, sizeof(LogLine));
-    if (!canQueue || !sdQueue) {
+    if (!canQueue || !sdQueue)
+    {
         ESP_LOGE(TAG, "queue create failed");
         return;
     }

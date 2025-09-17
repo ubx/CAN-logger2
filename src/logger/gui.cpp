@@ -1,6 +1,8 @@
 #include <cstdio>
 #include <freertos/FreeRTOS.h>
 #include <freertos/semphr.h>
+
+#include "common.h"
 #include "esp_err.h"
 #include "esp_lcd_panel_io.h"
 #include "esp_lcd_panel_ops.h"
@@ -8,7 +10,6 @@
 #include "esp_log.h"
 #include "esp_timer.h"
 #include "driver/gpio.h"
-#include "driver/spi_master.h"
 #include "freertos/task.h"
 
 #include "esp_lcd_sh8601.h"
@@ -16,19 +17,9 @@
 
 static const char* TAG = "GUI";
 
-// === Pin and LCD Config ===
-#define LCD_HOST  SPI2_HOST
-
+// === LCD Config ===
 #define LCD_H_RES              280
 #define LCD_V_RES              456
-
-#define PIN_NUM_LCD_CS         (GPIO_NUM_9)
-#define PIN_NUM_LCD_PCLK       (GPIO_NUM_10)
-#define PIN_NUM_LCD_DATA0      (GPIO_NUM_11)
-#define PIN_NUM_LCD_DATA1      (GPIO_NUM_12)
-#define PIN_NUM_LCD_DATA2      (GPIO_NUM_13)
-#define PIN_NUM_LCD_DATA3      (GPIO_NUM_14)
-#define PIN_NUM_LCD_RST        (GPIO_NUM_21)
 
 #define LVGL_BUF_HEIGHT        (LCD_V_RES / 4)
 #define LVGL_TICK_PERIOD_MS    2
@@ -128,11 +119,7 @@ void set_label1(const char* text)
     if (xSemaphoreTake(lvgl_mux, portMAX_DELAY))
     {
         if (label1)
-        {
             lv_label_set_text(label1, text);
-            ESP_LOGI(TAG, "lv_label_set_text");
-        }
-
         xSemaphoreGive(lvgl_mux);
     }
 }
@@ -149,8 +136,6 @@ void set_label2(const char* text)
 
 bool gui_init()
 {
-    vTaskDelay(pdMS_TO_TICKS(1000));
-
     // === LVGL Init ===
     ESP_LOGI(TAG, "Initialize LVGL");
     lv_init();
@@ -203,11 +188,11 @@ bool gui_init()
     sh8601_vendor_config_t vendor_config = {
         .init_cmds = lcd_init_cmds,
         .init_cmds_size = sizeof(lcd_init_cmds) / sizeof(lcd_init_cmds[0]),
-        .flags = {.use_qspi_interface = 0},
+        .flags = {.use_qspi_interface = 1},
     };
 
     // Attach the LCD to the SPI bus
-    ESP_ERROR_CHECK(esp_lcd_new_panel_io_spi((esp_lcd_spi_bus_handle_t)SPI2_HOST, &io_config, &io_handle));
+    ESP_ERROR_CHECK(esp_lcd_new_panel_io_spi((esp_lcd_spi_bus_handle_t)DISPLAY_HOST, &io_config, &io_handle));
 
     ESP_LOGI(TAG, "Install LCD driver of sh8601");
     esp_lcd_panel_handle_t panel_handle = nullptr;
@@ -230,7 +215,7 @@ bool gui_init()
     lvgl_mux = xSemaphoreCreateMutex();
     xTaskCreate(lvgl_task, "LVGL", 4096, nullptr, 2, nullptr);
 
-    // === Show "Hello" ===
+    // === Show label ===
     if (xSemaphoreTake(lvgl_mux, portMAX_DELAY))
     {
         label1 = lv_label_create(lv_scr_act());
@@ -240,7 +225,7 @@ bool gui_init()
         lv_label_set_text(label2, "");
 
         lv_obj_align(label1, LV_ALIGN_CENTER, 0, 0);
-        lv_obj_align(label2, LV_ALIGN_CENTER, 0, 0);
+        lv_obj_align(label2, LV_ALIGN_CENTER, 0, 100);
 
         xSemaphoreGive(lvgl_mux);
     }
