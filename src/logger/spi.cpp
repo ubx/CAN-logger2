@@ -19,7 +19,7 @@ bool spi_init()
         .data6_io_num = -1,
         .data7_io_num = -1,
         .data_io_default_level = false,
-        .max_transfer_sz = 4000,
+        .max_transfer_sz = 40000,
         .flags = 0,
         .intr_flags = 0,
     };
@@ -42,7 +42,7 @@ bool spi_init()
         .data6_io_num = -1,
         .data7_io_num = -1,
         .data_io_default_level = false,
-        .max_transfer_sz = 4000,
+        .max_transfer_sz = 40000,
         .flags = 0,
         .intr_flags = 0,
     };

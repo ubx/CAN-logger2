@@ -148,7 +148,7 @@ bool gui_init()
     lv_init();
 
     // allocate two line buffers (+8 for LVGL internal palette reservation)
-    const size_t buf_line_bytes = LCD_H_RES * LVGL_BUF_HEIGHT;
+    const size_t buf_line_bytes = LCD_H_RES * LVGL_BUF_HEIGHT * 2;
     const size_t buf_alloc_bytes = buf_line_bytes + 8;
 
     void* buf1 = heap_caps_malloc(buf_alloc_bytes, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
@@ -173,6 +173,7 @@ bool gui_init()
                            static_cast<uint32_t>(buf_alloc_bytes),
                            LV_DISPLAY_RENDER_MODE_PARTIAL);
     lv_display_set_default(display);
+    lv_obj_set_style_bg_color(lv_scr_act(), lv_color_black(), 0);
 
     // Start LVGL tick timer
     const esp_timer_create_args_t lvgl_tick_timer_args = {
