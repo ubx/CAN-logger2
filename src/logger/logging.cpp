@@ -366,3 +366,8 @@ void start_logging_mode()
         vTaskDelay(pdMS_TO_TICKS(10));
     }
 }
+
+long get_message_count()
+{
+    return messageCount;
+}

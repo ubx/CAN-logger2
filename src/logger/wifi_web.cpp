@@ -16,6 +16,7 @@
 #include "esp_vfs_fat.h"
 #include "esp_timer.h"
 #include "common.h"
+#include "esp_netif.h"
 
 #define WIFI_PASSWORD     "12345678"
 
@@ -25,6 +26,7 @@ static const char* TAG = "WIFI_WEB";
 
 // Track last HTTP request activity
 static unsigned long lastWebActivity = 0;
+static esp_netif_t* ap_netif = nullptr;
 
 static unsigned long millis()
 {
@@ -63,7 +65,7 @@ std::string human_size(size_t bytes)
 
 void wifi_init_softap()
 {
-    esp_netif_create_default_wifi_ap();
+    ap_netif = esp_netif_create_default_wifi_ap();   // save handle
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
     std::string ssid = generate_unique_ssid();
@@ -206,3 +208,20 @@ httpd_handle_t start_webserver()
     }
     return server;
 }
+
+// Get current IP address of the AP interface
+const char* get_ip_address()
+{
+    static char ip[16];  // "255.255.255.255\0"
+    if (!ap_netif)
+        return "0.0.0.0";
+
+    esp_netif_ip_info_t ip_info;
+    if (esp_netif_get_ip_info(ap_netif, &ip_info) == ESP_OK)
+    {
+        snprintf(ip, sizeof(ip), IPSTR, IP2STR(&ip_info.ip));
+        return ip;
+    }
+    return "0.0.0.0";
+}
+

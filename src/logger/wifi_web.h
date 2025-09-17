@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include "esp_http_server.h"
 
 // Initializes WiFi as SoftAP
@@ -15,3 +16,5 @@ bool mount_sdcard();
 unsigned long get_last_web_activity();
 
 void reset_web_activity();
+
+const char* get_ip_address();

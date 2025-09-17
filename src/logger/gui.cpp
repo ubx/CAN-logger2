@@ -134,6 +134,13 @@ void set_label2(const char* text)
     }
 }
 
+void set_label2(long value)
+{
+    char buffer[32];  // enough for a 64-bit long in decimal
+    snprintf(buffer, sizeof(buffer), "%ld", value);
+    set_label2(buffer);
+}
+
 bool gui_init()
 {
     // === LVGL Init ===
@@ -224,8 +231,8 @@ bool gui_init()
         lv_label_set_text(label1, "");
         lv_label_set_text(label2, "");
 
-        lv_obj_align(label1, LV_ALIGN_CENTER, 0, 0);
-        lv_obj_align(label2, LV_ALIGN_CENTER, 0, 100);
+        lv_obj_align(label1, LV_ALIGN_TOP_MID, 0, 50);
+        lv_obj_align(label2, LV_ALIGN_TOP_MID, 0, 100);
 
         xSemaphoreGive(lvgl_mux);
     }

@@ -27,6 +27,17 @@
 static const unsigned IDLE_TIME = 1 * 60 * 1000;
 static const char* TAG = "CAN_Logger";
 
+// === Counter Task ===
+[[noreturn]] static void display_message_counter(void* arg)
+{
+    ESP_LOGI(TAG, "Starting display_message_counter task");
+    while (true)
+    {
+        set_label2(get_message_count());
+        vTaskDelay(pdMS_TO_TICKS(1000));
+    }
+}
+
 extern "C" void app_main(void)
 {
     vTaskDelay(pdMS_TO_TICKS(1000));
@@ -60,8 +71,9 @@ extern "C" void app_main(void)
     mount_sdcard();
 
     // WiFi Phase
-    set_label1("AP");
     wifi_init_softap();
+    set_label1("AP");
+    set_label2(get_ip_address());
     httpd_handle_t server = start_webserver();
     reset_web_activity();
     while (true)
@@ -77,5 +89,6 @@ extern "C" void app_main(void)
 
     // Logging Mode
     set_label1("Logger");
+    xTaskCreate(display_message_counter, "Counter", 4096, nullptr, 2, nullptr);
     start_logging_mode();
 }
