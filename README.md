@@ -84,18 +84,25 @@ while also providing a temporary WiFi access point with a web-based file browser
 
 ## Pin-to-Pin Wiring Table
 
-| ESP32 Pin | Function        | Connected To       | Notes                        |
-|-----------|-----------------|-------------------|------------------------------|
-| GPIO1     | SPI MOSI        | SD Card MOSI      | Data out from ESP32 → SD     |
-| GPIO3     | SPI MISO        | SD Card MISO      | Data in from SD → ESP32      |
-| GPIO2     | SPI SCLK        | SD Card SCLK      | SPI clock                    |
-| GPIO41    | SPI CS          | SD Card CS        | Chip select                  |
-| GPIO18    | CAN TX          | CAN Transceiver TXD | Transmit to CAN bus        |
-| GPIO17    | CAN RX          | CAN Transceiver RXD | Receive from CAN bus       |
-| 3V3       | Power           | SD Card VCC, CAN VCC | Ensure 3.3V compatible   |
-| GND       | Ground          | SD Card GND, CAN GND | Common ground reference   |
-| CANH/—    | —               | CAN Bus High Line | Differential bus line        |
-| CANL/—    | —               | CAN Bus Low Line  | Differential bus line        |
+| ESP32 Pin | Function       | Connected To                | Notes                        |
+|-----------|----------------|-----------------------------|------------------------------|
+| GPIO1     | SPI MOSI       | SD Card MOSI                | Data out from ESP32 → SD     |
+| GPIO3     | SPI MISO       | SD Card MISO                | Data in from SD → ESP32      |
+| GPIO2     | SPI SCLK       | SD Card SCLK                | SPI clock                    |
+| GPIO41    | SPI CS         | SD Card CS                  | Chip select                  |
+| GPIO9     | CS             | LCD Chip Select             | Active low                   |
+| GPIO10    | PCLK           | LCD SPI Clock / Pixel Clock | QSPI clock                   |
+| GPIO11    | DATA0          | LCD Data 0 (D0)             | QSPI data line               |
+| GPIO12    | DATA1          | LCD Data 1 (D1)             | QSPI data line               |
+| GPIO13    | DATA2          | LCD Data 2 (D2)             | QSPI data line               |
+| GPIO14    | DATA3          | LCD Data 3 (D3)             | QSPI data line               |
+| GPIO21    | RST            | LCD Reset                   | Optional, active low         
+| GPIO18    | CAN TX         | CAN Transceiver TXD         | Transmit to CAN bus          |
+| GPIO17    | CAN RX         | CAN Transceiver RXD         | Receive from CAN bus         |
+| 3V3       | Power          | SD Card VCC, CAN VCC        | Ensure 3.3V compatible       |
+| GND       | Ground         | SD Card GND, CAN GND        | Common ground reference      |
+| CANH/—    | —              | CAN Bus High Line           | Differential bus line        |
+| CANL/—    | —              | CAN Bus Low Line            | Differential bus line        |
 
 ## Recommended Parts List (BOM)
 
@@ -138,5 +145,5 @@ while also providing a temporary WiFi access point with a web-based file browser
 - ~~unique ssid~~
 - ~~split sources~~
 - ~~design a case~~
-- display info
+- ~~display info~~
 
