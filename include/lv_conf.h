@@ -17,7 +17,7 @@
 #ifndef LV_CONF_H
 #define LV_CONF_H
 
-#define LV_FONT_MONTSERRAT_28  1
+#define LV_FONT_MONTSERRAT_26  1
 #define LV_FONT_UNSCII_16      1
 
 /* If you need to include anything here, do it inside the `__ASSEMBLY__` guard */

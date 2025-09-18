@@ -216,7 +216,7 @@ bool gui_init()
     {
         label1 = lv_label_create(lv_scr_act());
         lv_obj_set_style_text_color(label1, lv_color_make(0, 0, 0xFF), LV_PART_MAIN);
-        lv_obj_set_style_text_font(label1, &lv_font_montserrat_28, 0);
+        lv_obj_set_style_text_font(label1, &lv_font_montserrat_26, 0);
         label2 = lv_label_create(lv_scr_act());
         lv_obj_set_style_text_color(label2, lv_color_make(0, 0, 0xFF), LV_PART_MAIN);
         lv_obj_set_style_text_font(label2, &lv_font_unscii_16, 0);
