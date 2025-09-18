@@ -146,4 +146,8 @@ while also providing a temporary WiFi access point with a web-based file browser
 - ~~split sources~~
 - ~~design a case~~
 - ~~display info~~
+- bigger usb-c excerpt
+- bom, 2st. M2x5 Rund, 1st. M3x5 Senk.
+- Optional: removable SD card (in lid)
+- Optional: PCB
 

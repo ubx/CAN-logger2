@@ -14,6 +14,7 @@
 
 #include "esp_lcd_sh8601.h"
 #include "lvgl.h"
+#include "lv_conf.h"
 
 static const char* TAG = "GUI";
 
@@ -59,20 +60,6 @@ static void lvgl_flush_cb(lv_display_t* disp, const lv_area_t* area, uint8_t* px
     lv_display_flush_ready(disp);
 }
 
-// Optional: align redraw areas to 2x2 boundary
-static void lvgl_round_area_align(lv_area_t* area)
-{
-    int32_t x1 = area->x1;
-    int32_t x2 = area->x2;
-    int32_t y1 = area->y1;
-    int32_t y2 = area->y2;
-
-    area->x1 = (x1 >> 1) << 1;
-    area->y1 = (y1 >> 1) << 1;
-    area->x2 = ((x2 >> 1) << 1) + 1;
-    area->y2 = ((y2 >> 1) << 1) + 1;
-}
-
 // esp_lcd IO event callback
 static bool notify_lvgl_flush_ready(esp_lcd_panel_io_handle_t panel_io,
                                     esp_lcd_panel_io_event_data_t* edata,
@@ -105,7 +92,7 @@ static void increase_lvgl_tick(void* arg)
             lv_timer_handler();
             xSemaphoreGive(lvgl_mux);
         }
-        vTaskDelay(pdMS_TO_TICKS(10));
+        vTaskDelay(pdMS_TO_TICKS(20));
     }
 }
 
@@ -114,29 +101,30 @@ static lv_obj_t* label1 = nullptr;
 static lv_obj_t* label2 = nullptr;
 
 // === Thread-safe setter functions ===
-void set_label1(const char* text)
+static inline void set_label(lv_obj_t* label, const char* text)
 {
     if (xSemaphoreTake(lvgl_mux, portMAX_DELAY))
     {
-        if (label1)
-            lv_label_set_text(label1, text);
+        if (label && text)
+            lv_label_set_text(label, text);
+
         xSemaphoreGive(lvgl_mux);
     }
+}
+
+void set_label1(const char* text)
+{
+    set_label(label1, text);
 }
 
 void set_label2(const char* text)
 {
-    if (xSemaphoreTake(lvgl_mux, portMAX_DELAY))
-    {
-        if (label2)
-            lv_label_set_text(label2, text);
-        xSemaphoreGive(lvgl_mux);
-    }
+    set_label(label2, text);
 }
 
 void set_label2(long value)
 {
-    char buffer[32];  // enough for a 64-bit long in decimal
+    char buffer[32]; // enough for a 64-bit long in decimal
     snprintf(buffer, sizeof(buffer), "%ld", value);
     set_label2(buffer);
 }
@@ -173,7 +161,7 @@ bool gui_init()
                            static_cast<uint32_t>(buf_alloc_bytes),
                            LV_DISPLAY_RENDER_MODE_PARTIAL);
     lv_display_set_default(display);
-    lv_obj_set_style_bg_color(lv_scr_act(), lv_color_black(), 0);
+    lv_obj_set_style_bg_color(lv_screen_active(), lv_color_black(), LV_PART_MAIN);
 
     // Start LVGL tick timer
     const esp_timer_create_args_t lvgl_tick_timer_args = {
@@ -227,13 +215,17 @@ bool gui_init()
     if (xSemaphoreTake(lvgl_mux, portMAX_DELAY))
     {
         label1 = lv_label_create(lv_scr_act());
+        lv_obj_set_style_text_color(label1, lv_color_make(0, 0, 0xFF), LV_PART_MAIN);
+        lv_obj_set_style_text_font(label1, &lv_font_montserrat_28, 0);
         label2 = lv_label_create(lv_scr_act());
+        lv_obj_set_style_text_color(label2, lv_color_make(0, 0, 0xFF), LV_PART_MAIN);
+        lv_obj_set_style_text_font(label2, &lv_font_unscii_16, 0);
 
         lv_label_set_text(label1, "");
         lv_label_set_text(label2, "");
 
-        lv_obj_align(label1, LV_ALIGN_TOP_MID, 0, 50);
-        lv_obj_align(label2, LV_ALIGN_TOP_MID, 0, 100);
+        lv_obj_align(label1, LV_ALIGN_TOP_MID, 0, 70);
+        lv_obj_align(label2, LV_ALIGN_TOP_MID, 0, 120);
 
         xSemaphoreGive(lvgl_mux);
     }
