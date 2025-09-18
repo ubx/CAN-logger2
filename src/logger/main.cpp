@@ -24,7 +24,7 @@
 #define GIT_REVISION "unknown"
 #endif
 
-static const unsigned IDLE_TIME = 1 * 60 * 1000;
+static const unsigned IDLE_TIME = 3 * 60 * 1000;
 static const char* TAG = "CAN_Logger";
 
 // === Counter Task ===
@@ -68,6 +68,12 @@ extern "C" void app_main(void)
 
     spi_init();
     gui_init();
+
+    // show name and version
+    set_label1(APP_NAME);
+    set_label2(APP_VERSION);
+    vTaskDelay(pdMS_TO_TICKS(5000));
+
     mount_sdcard();
 
     // WiFi Phase
