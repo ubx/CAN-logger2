@@ -16,6 +16,7 @@
 #include "freertos/queue.h"
 #include "esp_timer.h"
 #include "common.h"
+#include "esp_heap_caps.h"
 
 // -----------------------------
 // Shared config (from main)
@@ -23,7 +24,8 @@
 #define CAN_TX_PIN         GPIO_NUM_18
 #define CAN_RX_PIN         GPIO_NUM_17
 //#define QUEUE_LEN          1536
-#define QUEUE_LEN          1536 / 2
+#define CAN_QUEUE_LEN          100
+#define SD_QUEUE_LEN          1200
 #define BATCH_MAX_BYTES    (64*1024)
 #define BATCH_MAX_MS       20
 #define FICTIONAL_START_TIME 1755839937.312293  // due to missing RTC
@@ -59,6 +61,10 @@ static unsigned long lastSync = 0;
 
 static QueueHandle_t sdQueue = nullptr;
 static QueueHandle_t canQueue = nullptr;
+
+// Large batch buffer moved to heap/PSRAM to save internal DRAM for queues
+static uint8_t* g_batchBuf = nullptr;
+static size_t g_batchBufSize = BATCH_MAX_BYTES;
 
 // -----------------------------
 // Helpers
@@ -271,37 +277,40 @@ static bool init_can()
 
 [[noreturn]] static void sd_writer_task(void* arg)
 {
-    static uint8_t batchBuf[BATCH_MAX_BYTES];
-
     while (true)
     {
         size_t used = 0;
         LogLine line;
         if (xQueueReceive(sdQueue, &line, pdMS_TO_TICKS(50)) == pdTRUE)
         {
-            if (line.len <= sizeof(batchBuf))
+            if (g_batchBuf && line.len <= g_batchBufSize)
             {
-                memcpy(batchBuf, line.data, line.len);
+                memcpy(g_batchBuf, line.data, line.len);
                 used = line.len;
+            }
+            else if (logFile && line.len > 0)
+            {
+                // Fallback: write directly if no batch buffer
+                fwrite(line.data, 1, line.len, logFile);
+                fflush(logFile);
             }
         }
 
         TickType_t start = xTaskGetTickCount();
-        while (used + sizeof(LogLine::data) < sizeof(batchBuf))
+        while (g_batchBuf && (used + sizeof(LogLine::data) < g_batchBufSize))
         {
             if ((xTaskGetTickCount() - start) * portTICK_PERIOD_MS >= BATCH_MAX_MS) break;
 
             LogLine more;
             if (xQueueReceive(sdQueue, &more, 0) != pdTRUE) break;
-            if (used + more.len > sizeof(batchBuf)) break;
-
-            memcpy(batchBuf + used, more.data, more.len);
+            if (used + more.len > g_batchBufSize) break;
+            memcpy(g_batchBuf + used, more.data, more.len);
             used += more.len;
         }
 
-        if (used > 0 && logFile)
+        if (used > 0 && logFile && g_batchBuf)
         {
-            size_t written = fwrite(batchBuf, 1, used, logFile);
+            size_t written = fwrite(g_batchBuf, 1, used, logFile);
             if (written != used)
             {
                 ESP_LOGE("SD", "fwrite failed: wrote %u of %u", (unsigned) written, (unsigned) used);
@@ -335,12 +344,37 @@ void start_logging_mode()
         }
     }
 
-    canQueue = xQueueCreate(QUEUE_LEN, sizeof(CANMessage_t));
-    sdQueue = xQueueCreate(QUEUE_LEN, sizeof(LogLine));
+    canQueue = xQueueCreate(CAN_QUEUE_LEN, sizeof(CANMessage_t));
+    sdQueue = xQueueCreate(SD_QUEUE_LEN, sizeof(LogLine));
     if (!canQueue || !sdQueue)
     {
         ESP_LOGE(TAG, "queue create failed");
         return;
+    }
+
+    // Allocate batch buffer in PSRAM if available to preserve internal DRAM for queues
+    if (!g_batchBuf)
+    {
+        g_batchBuf = (uint8_t*)heap_caps_malloc(BATCH_MAX_BYTES, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+        if (g_batchBuf)
+        {
+            g_batchBufSize = BATCH_MAX_BYTES;
+            ESP_LOGI("SD", "Batch buffer allocated in PSRAM: %u bytes", (unsigned) g_batchBufSize);
+        }
+        else
+        {
+            g_batchBuf = (uint8_t*)heap_caps_malloc(BATCH_MAX_BYTES, MALLOC_CAP_8BIT);
+            if (g_batchBuf)
+            {
+                g_batchBufSize = BATCH_MAX_BYTES;
+                ESP_LOGI("SD", "Batch buffer allocated in internal heap: %u bytes", (unsigned) g_batchBufSize);
+            }
+            else
+            {
+                g_batchBufSize = 0;
+                ESP_LOGW("SD", "Batch buffer allocation failed; will write line-by-line without batching");
+            }
+        }
     }
 
     xTaskCreate(can_receiver_task, "CAN_RX", 4096, nullptr, 5, nullptr);
