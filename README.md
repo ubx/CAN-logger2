@@ -3,6 +3,7 @@
 This project implements a **dual-mode ESP32 application** for capturing and storing CAN bus data onto an SD card,
 while also providing a temporary WiFi access point with a web-based file browser to retrieve logged data.
 
+![Logger](case/20250921_092147.jpg "CAN Logger")
 ---
 
 ## Features
@@ -140,15 +141,7 @@ while also providing a temporary WiFi access point with a web-based file browser
 
 
 ## Todo
-- ~~what if sd card full?~~
-- ~~how to transfer files -> Wifi?~~
-- ~~RTC~~
-- ~~unique ssid~~
-- ~~split sources~~
-- ~~design a case~~
-- ~~display info~~
-- bigger usb-c excerpt
-- bom, 2st. M2x5 Rund, 1st. M3x5 Senk.
+- bigger USB-C excerpt
+- BOM: 2pcs. M2x5 round, 1st. M3x5 countersunk head.
 - Optional: removable SD card (in lid)
 - Optional: PCB
-
