@@ -59,8 +59,7 @@ while also providing a temporary WiFi access point with a web-based file browser
 - **Failsafe Storage Management** with automatic cleanup.
 - **Lightweight Web Server** (ESP-IDF HTTPD) for SD browsing and downloads.
 - **No RTC dependency**: Uses a fictional start timestamp to emulate Unix t.ime.
-- **Tested on a ESP32-S3 board** ([ESP32-S3 1.64inch AMOLED Touch Display Development Board](https://www.waveshare.com/esp32-s3-touch-amoled-1.64.htm) and
-  [ESP32-S3-Touch-AMOLED-1.75](https://www.waveshare.com/wiki/ESP32-S3-Touch-AMOLED-1.75)) with a SANDISK High Endurance
+- **Tested on a ESP32-S3 board:** [ESP32-S3 1.64inch AMOLED Touch Display Development Board](https://www.waveshare.com/esp32-s3-touch-amoled-1.64.htm) with a SANDISK High Endurance
   32 GB, microSDHC.
 - **Performance Test**: Running `cangen can0 -D i -I i -L 4 -g 0.7` resulted in a transmission rate of approximately 1,200 messages per second.
 ---

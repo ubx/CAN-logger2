@@ -26,6 +26,8 @@ static const char* TAG = "GUI";
 #define LVGL_TICK_PERIOD_MS    2
 
 static SemaphoreHandle_t lvgl_mux = nullptr;
+esp_lcd_panel_handle_t panel_handle = nullptr;
+TaskHandle_t lvglTaskHandle = nullptr;
 
 // SH8601 init cmds
 static const sh8601_lcd_init_cmd_t lcd_init_cmds[] = {
@@ -38,8 +40,6 @@ static const sh8601_lcd_init_cmd_t lcd_init_cmds[] = {
     {0x29, (uint8_t []){0x00}, 0, 10},
     {0x51, (uint8_t []){0xFF}, 1, 0}, // brightness
 };
-
-esp_lcd_panel_handle_t panel_handle = nullptr;
 
 // === LVGL flush callback (v9) ===
 static void lvgl_flush_cb(lv_display_t* disp, const lv_area_t* area, uint8_t* px_map)
@@ -210,8 +210,7 @@ bool gui_init()
 
     // Create LVGL mutex + task
     lvgl_mux = xSemaphoreCreateMutex();
-    xTaskCreate(lvgl_task, "LVGL", 4096, nullptr, 2, nullptr);
-
+    xTaskCreate(lvgl_task, "LVGL", 4096, nullptr, 2, &lvglTaskHandle);
     // === Show label ===
     if (xSemaphoreTake(lvgl_mux, portMAX_DELAY))
     {
@@ -236,4 +235,5 @@ bool gui_init()
 void turn_display_off()
 {
     ESP_ERROR_CHECK(esp_lcd_panel_disp_on_off(panel_handle, false));
+    vTaskDelete(lvglTaskHandle);
 }
