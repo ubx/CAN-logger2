@@ -27,15 +27,21 @@
 static const unsigned IDLE_TIME = 3 * 60 * 1000;
 static const char* TAG = "CAN_Logger";
 
+static const unsigned display_on_time_sec = 5 * 60;
+
 // === Counter Task ===
-[[noreturn]] static void display_message_counter(void* arg)
+static void display_message_counter(void* arg)
 {
-    ESP_LOGI(TAG, "Starting display_message_counter task");
-    while (true)
+    ESP_LOGI(TAG, "Starting display_message_counter task for %u seconds", display_on_time_sec);
+
+    unsigned cnt = 0;
+    while (cnt++ < display_on_time_sec)
     {
         set_label2(get_message_count());
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
+    turn_display_off();    // to avoid burn-in risk
+    vTaskDelete(nullptr);  // safely end this task
 }
 
 extern "C" void app_main(void)

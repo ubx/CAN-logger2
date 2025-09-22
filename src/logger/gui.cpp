@@ -39,6 +39,8 @@ static const sh8601_lcd_init_cmd_t lcd_init_cmds[] = {
     {0x51, (uint8_t []){0xFF}, 1, 0}, // brightness
 };
 
+esp_lcd_panel_handle_t panel_handle = nullptr;
+
 // === LVGL flush callback (v9) ===
 static void lvgl_flush_cb(lv_display_t* disp, const lv_area_t* area, uint8_t* px_map)
 {
@@ -191,7 +193,6 @@ bool gui_init()
     ESP_ERROR_CHECK(esp_lcd_new_panel_io_spi((esp_lcd_spi_bus_handle_t)DISPLAY_HOST, &io_config, &io_handle));
 
     ESP_LOGI(TAG, "Install LCD driver of sh8601");
-    esp_lcd_panel_handle_t panel_handle = nullptr;
     const esp_lcd_panel_dev_config_t panel_config = {
         .reset_gpio_num = PIN_NUM_LCD_RST,
         .rgb_ele_order = LCD_RGB_ELEMENT_ORDER_RGB,
@@ -230,4 +231,9 @@ bool gui_init()
         xSemaphoreGive(lvgl_mux);
     }
     return false;
+}
+
+void turn_display_off()
+{
+    ESP_ERROR_CHECK(esp_lcd_panel_disp_on_off(panel_handle, false));
 }
