@@ -81,8 +81,8 @@ static double get_unix_timestamp()
 }
 
 // cleanup threshold (bytes)
-#define SD_LOW_LIMIT   (1ULL * 1024 * 1024 * 1024)  // 1 GB
-#define SD_TARGET_FREE (2ULL * 1024 * 1024 * 1024)  // 2 GB
+#define SD_LOW_LIMIT   (2ULL * 1024 * 1024 * 1024)  // 2 GB
+#define SD_TARGET_FREE (4ULL * 1024 * 1024 * 1024)  // 4 GB
 
 // -----------------------------
 // Next free filename (CANxxxxx.LOG) with cleanup
@@ -101,7 +101,7 @@ static void next_free_file_name(char* path, size_t path_size)
 
         if (out_free < SD_LOW_LIMIT)
         {
-            ESP_LOGW("SD", "Low free space (<1GB). Deleting old files...");
+            ESP_LOGW("SD", "Low free space (<2GB). Deleting old files...");
 
             while (out_free < SD_TARGET_FREE)
             {
