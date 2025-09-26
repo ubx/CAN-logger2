@@ -194,7 +194,7 @@ static bool init_sd_card_and_open_file()
 // -----------------------------
 static bool init_can()
 {
-    twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT(CAN_TX_PIN, CAN_RX_PIN, TWAI_MODE_NORMAL);
+    twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT(CAN_TX_PIN, CAN_RX_PIN, TWAI_MODE_LISTEN_ONLY);
     twai_timing_config_t t_config = TWAI_TIMING_CONFIG_500KBITS();
     twai_filter_config_t f_config = TWAI_FILTER_CONFIG_ACCEPT_ALL();
 
@@ -222,15 +222,17 @@ static bool init_can()
     {
         if (twai_receive(&message, pdMS_TO_TICKS(100)) == ESP_OK)
         {
-            CANMessage_t msg;
-            msg.id = message.identifier;
-            msg.len = message.data_length_code;
-            memcpy(msg.buf, message.data, msg.len);
-            msg.timestamp = get_unix_timestamp();
-
-            if (xQueueSend(canQueue, &msg, 0) != pdTRUE)
+            if (message.data_length_code > 0)
             {
-                ESP_LOGW("CAN_RX", "canQueue full, dropped");
+                CANMessage_t msg;
+                msg.id = message.identifier;
+                msg.len = message.data_length_code;
+                memcpy(msg.buf, message.data, msg.len);
+                msg.timestamp = get_unix_timestamp();
+                if (xQueueSend(canQueue, &msg, 0) != pdTRUE)
+                {
+                    ESP_LOGW("CAN_RX", "canQueue full, dropped");
+                }
             }
         }
         taskYIELD();
