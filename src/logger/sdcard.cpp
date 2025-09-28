@@ -20,7 +20,7 @@ bool mount_sdcard()
 
     host = SDSPI_HOST_DEFAULT();
     host.slot = SDCARD_HOST;
-    //host.max_freq_khz = 25 * 1000;
+    host.max_freq_khz = SDMMC_FREQ_HIGHSPEED;
 
     esp_err_t ret = esp_vfs_fat_sdspi_mount(SD_MOUNT_POINT, &host, &slot_config, &mount_config, &card);
     if (ret != ESP_OK)

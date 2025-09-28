@@ -319,7 +319,10 @@ static bool init_can()
             fflush(logFile);
         }
 
-        vTaskDelay(pdMS_TO_TICKS(1));
+        // Only yield if we didn't write anything this iteration to keep draining the queue aggressively
+        if (used == 0) {
+            vTaskDelay(pdMS_TO_TICKS(1));
+        }
     }
 }
 
