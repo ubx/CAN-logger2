@@ -3,7 +3,7 @@
 This project implements a **dual-mode ESP32 application** for capturing and storing CAN bus data onto an SD card,
 while also providing a temporary WiFi access point with a web-based file browser to retrieve logged data.
 
-![Logger](case/logger.jpg "CAN Logger")
+![Logger](images/logger.jpg "CAN Logger")
 ---
 
 ## Features
@@ -18,10 +18,6 @@ while also providing a temporary WiFi access point with a web-based file browser
 - **Automatic Session Timeout**
     - Tracks last HTTP activity.
     - Shuts down after configurable inactivity time.
-- **SD Card Handling**
-    - SPI interface with 25 MHz clock.
-    - Safe mount/unmount before and after WiFi phase.
-
 ---
 
 ### CAN Logging System
@@ -31,7 +27,7 @@ while also providing a temporary WiFi access point with a web-based file browser
     - Reliable driver startup with retry on failure.
 - **SD Card Logging**
     - Files named sequentially as `CANxxxxx.LOG`.
-    - Automatic **old file cleanup** if free space < 1 GB (reclaims up to 2 GB).
+    - Automatic **old file cleanup** if free space < 2 GB (reclaims up to 4 GB).
     - Efficient batch writes with **32 KB buffering**.
     - Uses `fsync()` to ensure data integrity.
 - **Logging Format**
@@ -139,9 +135,42 @@ while also providing a temporary WiFi access point with a web-based file browser
 - **Case/Enclosure** to protect the ESP32 + modules in automotive environment
 - **For CANaerospace logs**: use [this program](https://github.com/ubx/canlog-correct-ts/blob/master/correct-ts.py) to adjust timestamps.
 
+### Bill of materials
+
+| Number | Part                                                          | Qty | Picture                                          | 	Source                                                                                                                                                        |
+|--------|---------------------------------------------------------------|-----|--------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1      | ESP32-S3 1.64inch AMOLED<br/> Touch Display Development Board | 1   | ![Board](images/ESP32-S3-Touch-AMOLED-1.64.jpg)  | [AMOLED Touch Display<br/>Development Board](https://www.waveshare.com/esp32-s3-touch-amoled-1.64.htm)                                                         |                                                                                
+| 2      | SN65HVD230 CAN Board                                          | 1   | ![Board](images/SN65HVD230-CAN-Board.jpg)        | [SN65HVD230 CAN Board	](https://www.waveshare.com/sn65hvd230-can-board.htm)                                                                                    |                                                                                      |
+| 3      | Step Down Converter Modul                                     | 1   | ![Boars](images/Down-Converter-Modul.jpg)        | [Step Down Converter Modul	](https://de.aliexpress.com/item/1005006461126809.html?spm=a2g0o.order_list.order_list_main.76.1a475c5fBDXy9Z&gatewayAdapt=glo2deu) |
+| 4      | M12 5 Pin Cable Connector                                     | 1   | ![Boars](images/M12-5-Pin-Cable-Connector-F.jpg) | [M12 5 Pin Cable Connector](https://de.aliexpress.com/item/1005008983446794.html?spm=a2g0o.order_list.order_list_main.60.1a475c5fBDXy9Z&gatewayAdapt=glo2deu)  |
+| 5      | M2x5 round screw                                              | 4   |                                                  |                                                                                                                                                                |
+| 6      | M3x5 countersunk screw                                        | 1   |
+| 7      | M3x4 insert                                                   | 1   |
+| 8      | Optional:<br/>SD-TF-extension-cable                           | 1   | ![Board](images/SD-TF-extension-cable.jpg)       | [SD-TF-extension-cable	](https://de.aliexpress.com/item/1005005671622003.html?spm=a2g0o.order_list.order_list_main.4.3fb05c5fkolpFm&gatewayAdapt=glo2deu)      |
+
+
+---
+
+## Troubleshooting: sdQueue full / canQueue full warnings
+If you see warnings like:
+- W (xxxx) CAN_Proc: sdQueue full, dropped line
+- W (xxxx) CAN_RX: canQueue full, dropped
+
+it means the producer tasks (CAN reception/formatting) are temporarily faster than the consumer (SD writer). The firmware includes several mitigations:
+
+Additional steps you can take
+- Use a fast SD card (A1/A2 or High Endurance) and keep it healthy/formatted (FAT32).
+- Reduce other workload while logging (disable unnecessary peripherals, WiFi, or display if not needed).
+- If you still experience drops, you can increase queue depths in src/logger/logging.cpp:
+  - CAN_QUEUE_LEN: number of CAN frames buffered between driver and formatter.
+  - SD_QUEUE_LEN: number of formatted lines buffered before SD writing.
+  Be mindful that increasing these consumes internal RAM.
+- If your board has PSRAM, keep it enabled. The logger uses a large batch buffer to write in big chunks for higher throughput.
+- Ensure stable 3.3 V supply. Brownouts can slow peripherals and the filesystem.
+
+Notes
+- Even with a high-rate CAN traffic (e.g., ~1200 msgs/s), a proper SD card and power supply should avoid drops in most cases.
+- If absolute losslessness is required, consider reducing CAN bus load, increasing queue sizes, or writing in binary to reduce per-message overhead.
 
 ## Todo
-- BOM, 2p. M2x5 round, 1 pc. M3x5 countersunk with 3x4 insert
-- Optional: removable SD card (in lid)
 - Optional: PCB
-
