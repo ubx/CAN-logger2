@@ -55,10 +55,10 @@ while also providing a temporary WiFi access point with a web-based file browser
 - **Failsafe Storage Management** with automatic cleanup.
 - **Lightweight Web Server** (ESP-IDF HTTPD) for SD browsing and downloads.
 - **No RTC dependency**: Uses a fictional start timestamp to emulate Unix t.ime.
-- **Tested on a ESP32-S3 board:** [ESP32-S3 1.64inch AMOLED Touch Display Development Board](https://www.waveshare.com/esp32-s3-touch-amoled-1.64.htm) with a SANDISK High Endurance
-  32 GB, microSDHC.
-- **Performance Test**: Running `cangen can0 -D i -I i -L 4 -g 0.7` resulted in a transmission rate of approximately 1,200 messages per second.
-- **Power consumption**: as Web Server: 473 mW, as Logger with dsplay on: 390 mW, as Logger with dsplay off: 370 mW,
+- **Tested on a ESP32-S3 board:** [ESP32-S3 1.64inch AMOLED Touch Display Development Board](https://www.waveshare.com/esp32-s3-touch-amoled-1.64.htm) with a SANDISK Ultra
+  64 GB, microSDXC, U1, UHS-I.
+- **Performance Test**: Running `cangen can0 -D i -I i -L 4 -g 0.3` resulted in a transmission rate of approximately 2,800 messages per second.
+- **Power consumption**: as Web Server: 473 mW, as Logger with dsplay on: 420 mW, as Logger with dsplay off: 440 mW,
 ---
 
 ## Typical Use Case
@@ -68,17 +68,6 @@ while also providing a temporary WiFi access point with a web-based file browser
 4. CAN traffic onto the SD card.
 
 ---
-## Simple System Diagram
-
-[ ESP32 ]
-│
-├── WiFi Access Point → Web Browser (PC/Smartphone)
-│
-├── SPI Interface → SD Card (stores CAN logs)
-│
-└── CAN TX/RX → CAN Transceiver → CAN Bus (CANH / CANL)
-
-
 
 ## Pin-to-Pin Wiring Table
 
@@ -102,7 +91,7 @@ while also providing a temporary WiFi access point with a web-based file browser
 | CANH/—    | —              | CAN Bus High Line           | Differential bus line        |
 | CANL/—    | —              | CAN Bus Low Line            | Differential bus line        |
 
-## Recommended Parts List (BOM)
+## Recommended Parts List
 
 ### Core Components
 - **ESP32 Development Board**
@@ -112,7 +101,7 @@ while also providing a temporary WiFi access point with a web-based file browser
 - **SD Card Module (SPI interface)**
   - Example: MicroSD Card Module (3.3V logic, SPI mode support)
   - Ensure 3.3V compatible (no 5V modules without level shifting)
-  - MicroSD card, Class 10 or higher, ≥16 GB recommended
+  - MicroSD card, Class 10, A1 or higher, ≥16 GB recommended
 
 - **CAN Transceiver** (connects ESP32 to CAN bus)
   - Example ICs:
@@ -141,12 +130,13 @@ while also providing a temporary WiFi access point with a web-based file browser
 |--------|---------------------------------------------------------------|-----|--------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | 1      | ESP32-S3 1.64inch AMOLED<br/> Touch Display Development Board | 1   | ![Board](images/ESP32-S3-Touch-AMOLED-1.64.jpg)  | [AMOLED Touch Display<br/>Development Board](https://www.waveshare.com/esp32-s3-touch-amoled-1.64.htm)                                                         |                                                                                
 | 2      | SN65HVD230 CAN Board                                          | 1   | ![Board](images/SN65HVD230-CAN-Board.jpg)        | [SN65HVD230 CAN Board	](https://www.waveshare.com/sn65hvd230-can-board.htm)                                                                                    |                                                                                      |
-| 3      | Step Down Converter Modul                                     | 1   | ![Boars](images/Down-Converter-Modul.jpg)        | [Step Down Converter Modul	](https://de.aliexpress.com/item/1005006461126809.html?spm=a2g0o.order_list.order_list_main.76.1a475c5fBDXy9Z&gatewayAdapt=glo2deu) |
-| 4      | M12 5 Pin Cable Connector                                     | 1   | ![Boars](images/M12-5-Pin-Cable-Connector-F.jpg) | [M12 5 Pin Cable Connector](https://de.aliexpress.com/item/1005008983446794.html?spm=a2g0o.order_list.order_list_main.60.1a475c5fBDXy9Z&gatewayAdapt=glo2deu)  |
-| 5      | M2x5 round screw                                              | 4   |                                                  |                                                                                                                                                                |
-| 6      | M3x5 countersunk screw                                        | 1   |
-| 7      | M3x4 insert                                                   | 1   |
-| 8      | Optional:<br/>SD-TF-extension-cable                           | 1   | ![Board](images/SD-TF-extension-cable.jpg)       | [SD-TF-extension-cable	](https://de.aliexpress.com/item/1005005671622003.html?spm=a2g0o.order_list.order_list_main.4.3fb05c5fkolpFm&gatewayAdapt=glo2deu)      |
+| 3      | Step Down Converter Modul                                     | 1   | ![Board](images/Down-Converter-Modul.jpg)        | [Step Down Converter Modul	](https://de.aliexpress.com/item/1005006461126809.html?spm=a2g0o.order_list.order_list_main.76.1a475c5fBDXy9Z&gatewayAdapt=glo2deu) |
+| 4      | M12 5 Pin Cable Connector                                     | 1   | ![Board](images/M12-5-Pin-Cable-Connector-F.jpg) | [M12 5 Pin Cable Connector](https://de.aliexpress.com/item/1005008983446794.html?spm=a2g0o.order_list.order_list_main.60.1a475c5fBDXy9Z&gatewayAdapt=glo2deu)  |
+| 5      | micro sd card                                                 | 1   | ![Board](images/sd-card.jpg)                     |                                               
+| 6      | M2x5 round screw                                              | 4   |                                                  |                                                                                                                                                                |
+| 7      | M3x5 countersunk screw                                        | 1   |
+| 8      | M3x4 insert                                                   | 1   |
+| 9      | Optional:<br/>SD-TF-extension-cable                           | 1   | ![Board](images/SD-TF-extension-cable.jpg)       | [SD-TF-extension-cable	](https://de.aliexpress.com/item/1005005671622003.html?spm=a2g0o.order_list.order_list_main.4.3fb05c5fkolpFm&gatewayAdapt=glo2deu)      |
 
 
 ---
