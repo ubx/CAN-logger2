@@ -123,6 +123,7 @@ while also providing a temporary WiFi access point with a web-based file browser
 - **USB-to-CAN Adapter** (for testing/logging against a PC CAN interface)
 - **Case/Enclosure** to protect the ESP32 + modules in automotive environment
 - **For CANaerospace logs**: use [this program](https://github.com/ubx/canlog-correct-ts/blob/master/correct-ts.py) to adjust timestamps.
+- **Format sd card**: use [this tools](https://www.sdcard.org/downloads/sd-memory-card-formatter-for-linux/) 
 
 ### Bill of materials
 
