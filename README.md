@@ -57,7 +57,7 @@ while also providing a temporary WiFi access point with a web-based file browser
 - **No RTC dependency**: Uses a fictional start timestamp to emulate Unix t.ime.
 - **Tested on a ESP32-S3 board:** [ESP32-S3 1.64inch AMOLED Touch Display Development Board](https://www.waveshare.com/esp32-s3-touch-amoled-1.64.htm) with a SANDISK Ultra
   64 GB, microSDXC, U1, UHS-I.
-- **Performance Test**: Running `cangen can0 -D i -I i -L 4 -g 0.3` resulted in a transmission rate of approximately 2,800 messages per second.
+- **Performance Test**: Running `cangen can0 -D i -I i -L 4 -g 0.5` resulted in a transmission rate of approximately 1,800 messages per second.
 - **Power consumption**: as Web Server: 473 mW, as Logger with dsplay on: 420 mW, as Logger with dsplay off: 440 mW,
 ---
 
