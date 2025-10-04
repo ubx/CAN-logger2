@@ -1,6 +1,6 @@
 # ESP32 CAN Logger for CANaerospace with WiFi File Browser
 
-This project implements a **dual-mode ESP32 application** for capturing and storing CAN bus data onto an SD card,
+This project implements a **dual-mode ESP32 application** for capturing and storing CAN bus data onto an SD card, \
 while also providing a temporary WiFi access point with a web-based file browser to retrieve logged data.
 
 ![Logger](images/logger.jpg "CAN Logger")
@@ -12,40 +12,40 @@ while also providing a temporary WiFi access point with a web-based file browser
 - **WiFi SoftAP Setup** with WPA/WPA2 authentication.
 - **Dynamic SSID Generation** based on ESP32 MAC address.
 - **Web-based File Browser**:
-    - Displays SD card files in a clean HTML table.
-    - Supports file size display in human-readable format (KB, MB, GB).
-    - Click-to-download functionality with MIME type detection.
+  - Displays SD card files in a clean HTML table.
+  - Supports file size display in human-readable format (KB, MB, GB).
+  - Click-to-download functionality with MIME type detection.
 - **Automatic Session Timeout**
-    - Tracks last HTTP activity.
-    - Shuts down after configurable inactivity time.
+  - Tracks last HTTP activity.
+  - Shuts down after configurable inactivity time.
 ---
 
 ### CAN Logging System
 - **CAN Bus Support (TWAI Driver)**
-    - Configured for **500 kbit/s**.
-    - Accepts all CAN frames.
-    - Reliable driver startup with retry on failure.
+  - Configured for **500 kbit/s**.
+  - Accepts all CAN frames.
+  - Reliable driver startup with retry on failure.
 - **SD Card Logging**
-    - Files named sequentially as `CANxxxxx.LOG`.
-    - Automatic **old file cleanup** if free space < 2 GB (reclaims up to 4 GB).
-    - Efficient batch writes with **32 KB buffering**.
-    - Uses `fsync()` to ensure data integrity.
+  - Files named sequentially as `CANxxxxx.LOG`.
+  - Automatic **old file cleanup** if free space < 2 GB (reclaims up to 4 GB).
+  - Efficient batch writes with **32 KB buffering**.
+  - Uses `fsync()` to ensure data integrity.
 - **Logging Format**
-    - Each CAN frame stored as:
-      ```
-      (timestamp) can <ID>#<DATA>
-      ```  
-      Example:
-      ```
-      (1755839938.123456) can 123#11AAFF
-      ```
+  - Each CAN frame stored as:
+    ```
+    (timestamp) can <ID>#<DATA>
+    ```  
+    Example:
+    ```
+    (1755839938.123456) can 123#11AAFF
+    ```
 - **Task-based Architecture**
-    - `CAN_RX Task`: Receives frames from TWAI driver.
-    - `CAN_Proc Task`: Formats messages into log lines.
-    - `SD_Writer Task`: Buffers and writes batches to SD card.
+  - `CAN_RX Task`: Receives frames from TWAI driver.
+  - `CAN_Proc Task`: Formats messages into log lines.
+  - `SD_Writer Task`: Buffers and writes batches to SD card.
 - **Runtime Monitoring**
-    - Tracks total message count.
-    - Periodic logging of statistics to console.
+  - Tracks total message count.
+  - Periodic logging of statistics to console.
 
 ---
 
@@ -54,11 +54,12 @@ while also providing a temporary WiFi access point with a web-based file browser
 - **High-throughput SD logging** using buffered I/O.
 - **Failsafe Storage Management** with automatic cleanup.
 - **Lightweight Web Server** (ESP-IDF HTTPD) for SD browsing and downloads.
-- **No RTC dependency**: Uses a fictional start timestamp to emulate Unix t.ime.
-- **Tested on a ESP32-S3 board:** [ESP32-S3 1.64inch AMOLED Touch Display Development Board](https://www.waveshare.com/esp32-s3-touch-amoled-1.64.htm) with a SANDISK Ultra
+- **No RTC dependency**: Uses a fictional start timestamp to emulate Unix time.
+- **Tested on an ESP32-S3 board:** [ESP32-S3 1.64inch AMOLED Touch Display Development Board](https://www.waveshare.com/esp32-s3-touch-amoled-1.64.htm) with a SANDISK Ultra \
   64 GB, microSDXC, U1, UHS-I.
-- **Performance Test**: Running `cangen can0 -D i -I i -L 4 -g 0.5` resulted in a transmission rate of approximately 1,800 messages per second.
-- **Power consumption**: as Web Server: 473 mW, as Logger with dsplay on: 420 mW, as Logger with dsplay off: 440 mW,
+- **Performance Test**: Running `cangen can0 -D i -I i -L 4 -g 0.5` resulted in a transmission rate of \
+approximately 1,800 messages per second.
+- **Power consumption**: Web server: 473 mW; Logger with display on: 420 mW; Logger with display off: 440 mW.
 ---
 
 ## Typical Use Case
@@ -123,7 +124,7 @@ while also providing a temporary WiFi access point with a web-based file browser
 - **USB-to-CAN Adapter** (for testing/logging against a PC CAN interface)
 - **Case/Enclosure** to protect the ESP32 + modules in automotive environment
 - **For CANaerospace logs**: use [this program](https://github.com/ubx/canlog-correct-ts/blob/master/correct-ts.py) to adjust timestamps.
-- **Format sd card**: use [this tools](https://www.sdcard.org/downloads/sd-memory-card-formatter-for-linux/) 
+- **Format SD card**: use [this tool](https://www.sdcard.org/downloads/sd-memory-card-formatter-for-linux/)
 
 ### Bill of materials
 
@@ -133,7 +134,7 @@ while also providing a temporary WiFi access point with a web-based file browser
 | 2      | SN65HVD230 CAN Board                                          | 1   | ![Board](images/SN65HVD230-CAN-Board.jpg)        | [SN65HVD230 CAN Board	](https://www.waveshare.com/sn65hvd230-can-board.htm)                                                                                    |                                                                                      |
 | 3      | Step Down Converter Modul                                     | 1   | ![Board](images/Down-Converter-Modul.jpg)        | [Step Down Converter Modul	](https://de.aliexpress.com/item/1005006461126809.html?spm=a2g0o.order_list.order_list_main.76.1a475c5fBDXy9Z&gatewayAdapt=glo2deu) |
 | 4      | M12 5 Pin Cable Connector                                     | 1   | ![Board](images/M12-5-Pin-Cable-Connector-F.jpg) | [M12 5 Pin Cable Connector](https://de.aliexpress.com/item/1005008983446794.html?spm=a2g0o.order_list.order_list_main.60.1a475c5fBDXy9Z&gatewayAdapt=glo2deu)  |
-| 5      | micro sd card                                                 | 1   | ![Board](images/sd-card.jpg)                     |                                               
+| 5      | micro sd card                                                 | 1   | ![Board](images/sd-card.jpg)                     |
 | 6      | M2x5 round screw                                              | 4   |                                                  |                                                                                                                                                                |
 | 7      | M3x5 countersunk screw                                        | 1   |
 | 8      | M3x4 insert                                                   | 1   |
@@ -147,7 +148,8 @@ If you see warnings like:
 - W (xxxx) CAN_Proc: sdQueue full, dropped line
 - W (xxxx) CAN_RX: canQueue full, dropped
 
-it means the producer tasks (CAN reception/formatting) are temporarily faster than the consumer (SD writer). The firmware includes several mitigations:
+it means the producer tasks (CAN reception/formatting) are temporarily faster than the consumer (SD writer). \
+The firmware includes several mitigations:
 
 Additional steps you can take
 - Use a fast SD card (A1/A2 or High Endurance) and keep it healthy/formatted (FAT32).
@@ -155,13 +157,14 @@ Additional steps you can take
 - If you still experience drops, you can increase queue depths in src/logger/logging.cpp:
   - CAN_QUEUE_LEN: number of CAN frames buffered between driver and formatter.
   - SD_QUEUE_LEN: number of formatted lines buffered before SD writing.
-  Be mindful that increasing these consumes internal RAM.
+    Be mindful that increasing these consumes internal RAM.
 - If your board has PSRAM, keep it enabled. The logger uses a large batch buffer to write in big chunks for higher throughput.
 - Ensure stable 3.3 V supply. Brownouts can slow peripherals and the filesystem.
 
 Notes
 - Even with a high-rate CAN traffic (e.g., ~1200 msgs/s), a proper SD card and power supply should avoid drops in most cases.
-- If absolute losslessness is required, consider reducing CAN bus load, increasing queue sizes, or writing in binary to reduce per-message overhead.
+- If absolute losslessness is required, consider reducing CAN bus load, increasing queue sizes, or writing in binary \
+to reduce per-message overhead.
 
 ## Todo
 - Optional: PCB
