@@ -23,8 +23,8 @@
 // -----------------------------
 #define CAN_TX_PIN         GPIO_NUM_18
 #define CAN_RX_PIN         GPIO_NUM_17
-#define CAN_QUEUE_LEN          600
-#define SD_QUEUE_LEN          1600
+#define CAN_QUEUE_LEN          480
+#define SD_QUEUE_LEN          1000
 #define BATCH_MAX_BYTES    (64*1024)
 #define BATCH_MAX_MS       20
 #define FICTIONAL_START_TIME 1755839937.312293  // due to missing RTC
@@ -37,7 +37,7 @@ static const char* TAG = "LOGGING_MODE";
 typedef struct
 {
     uint16_t len;
-    char data[38];
+    char data[46];
 } LogLine;
 
 // -----------------------------
