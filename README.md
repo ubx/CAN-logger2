@@ -136,8 +136,8 @@ approximately 1,800 messages per second.
 | 4      | M12 5 Pin Cable Connector                                     | 1   | ![Board](images/M12-5-Pin-Cable-Connector-F.jpg) | [M12 5 Pin Cable Connector](https://de.aliexpress.com/item/1005008983446794.html?spm=a2g0o.order_list.order_list_main.60.1a475c5fBDXy9Z&gatewayAdapt=glo2deu)  |
 | 5      | micro sd card                                                 | 1   | ![Board](images/sd-card.jpg)                     |
 | 6      | M2x5 round screw                                              | 4   |                                                  |                                                                                                                                                                |
-| 7      | M3x5 countersunk screw                                        | 1   |
-| 8      | M3x4 insert                                                   | 1   |
+| 7      | M2.5x5 countersunk screw                                      | 1   |
+| 8      | M2.5x4 insert                                                 | 1   |
 | 9      | Optional:<br/>SD-TF-extension-cable                           | 1   | ![Board](images/SD-TF-extension-cable.jpg)       | [SD-TF-extension-cable	](https://de.aliexpress.com/item/1005005671622003.html?spm=a2g0o.order_list.order_list_main.4.3fb05c5fkolpFm&gatewayAdapt=glo2deu)      |
 
 
