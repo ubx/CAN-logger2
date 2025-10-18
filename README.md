@@ -167,4 +167,3 @@ Notes
 to reduce per-message overhead.
 
 ## Todo
-- Optional: PCB
