@@ -167,3 +167,7 @@ Notes
 to reduce per-message overhead.
 
 ## Todo
+- Check display z-distance.
+- PCB, move modules up 2mm z-distance.
+- Check usb hole, make it more tolerant.
+- Better lid locking.
