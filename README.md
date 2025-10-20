@@ -155,7 +155,7 @@ Additional steps you can take
 - Use a fast SD card (A1/A2 or High Endurance) and keep it healthy/formatted (FAT32).
 - Reduce other workload while logging (disable unnecessary peripherals, WiFi, or display if not needed).
 - If you still experience drops, you can increase queue depths in src/logger/logging.cpp:
-  - CAN_QUEUE_LEN: number of CAN frames buffered between driver and formatter.
+  - CAN_QUEUE_LEN: number of CAN frame buffered between driver and formatter.
   - SD_QUEUE_LEN: number of formatted lines buffered before SD writing.
     Be mindful that increasing these consumes internal RAM.
 - If your board has PSRAM, keep it enabled. The logger uses a large batch buffer to write in big chunks for higher throughput.
@@ -169,5 +169,6 @@ to reduce per-message overhead.
 ## Todo
 - Check display z-distance.
 - PCB, move modules up 2mm z-distance.
+- PCB, bigger holes for CAN connector cables.
 - Check usb hole, make it more tolerant.
 - Better lid locking.
